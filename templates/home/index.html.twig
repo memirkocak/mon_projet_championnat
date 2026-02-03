@@ -3,6 +3,23 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-    <h1>Hello World</h1>
+    <div class="container mt-5">
+        <h1 class="mb-4">Hello World</h1>
+        
+        <div class="list-group">
+            <a href="{{ path('app_country_create') }}" class="list-group-item list-group-item-action">
+                <h2>Création de pays</h2>
+            </a>
+            <a href="{{ path('app_championship_create') }}" class="list-group-item list-group-item-action">
+                <h2>Création de championnat</h2>
+            </a>
+            <a href="{{ path('app_team_create') }}" class="list-group-item list-group-item-action">
+                <h2>Création d'équipe</h2>
+            </a>
+            <a href="{{ path('app_game_create') }}" class="list-group-item list-group-item-action">
+                <h2>Création de résultat</h2>
+            </a>
+        </div>
+    </div>
 {% endblock %}
 
