@@ -48,7 +48,7 @@
                             <tbody>
                                 {% for championship in championships %}
                                     <tr>
-                                        <td><strong>{{ championship.name }}</strong></td>
+                                        <td><strong><a href="{{ path('app_championship_show', {id: championship.id}) }}">{{ championship.name }}</a></strong></td>
                                         <td>{{ championship.startDate|date('d/m/Y') }}</td>
                                         <td>{{ championship.endDate|date('d/m/Y') }}</td>
                                         <td>{{ championship.wonPoint }} / {{ championship.drawPoint }} / {{ championship.lostPoint }}</td>

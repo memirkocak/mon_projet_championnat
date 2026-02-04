@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ championship.name }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>{{ championship.name }}</h1>
+            <a href="{{ path('app_championships_list') }}" class="btn btn-secondary">Retour à la liste</a>
+        </div>
+
+        <div class="row">
+            <!-- Informations générales -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3>Informations générales</h3>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Date de début :</strong> {{ championship.startDate|date('d/m/Y') }}</p>
+                        <p><strong>Date de fin :</strong> {{ championship.endDate|date('d/m/Y') }}</p>
+                        <p><strong>Points :</strong> Victoire: {{ championship.wonPoint }} | Nul: {{ championship.drawPoint }} | Défaite: {{ championship.lostPoint }}</p>
+                        <p><strong>Type de classement :</strong> {{ championship.typeRanking }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Équipes participantes -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3>Équipes participantes</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if championship.teamChampionShips|length > 0 %}
+                            <ul class="list-group">
+                                {% for teamChampionShip in championship.teamChampionShips %}
+                                    <li class="list-group-item">
+                                        <strong>{{ teamChampionShip.team.name }}</strong>
+                                        <span class="text-muted">({{ teamChampionShip.team.country.name }})</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-muted">Aucune équipe associée à ce championnat.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Journées -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Journées</h3>
+            </div>
+            <div class="card-body">
+                {% if championship.days|length > 0 %}
+                    <div class="row">
+                        {% for day in championship.days %}
+                            <div class="col-md-3 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Journée {{ day.number }}</h5>
+                                        <p class="card-text">
+                                            <small class="text-muted">{{ day.games|length }} match(s)</small>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">Aucune journée créée pour ce championnat.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Matchs -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Matchs</h3>
+            </div>
+            <div class="card-body">
+                {% set allGames = [] %}
+                {% for day in championship.days %}
+                    {% for game in day.games %}
+                        {% set allGames = allGames|merge([game]) %}
+                    {% endfor %}
+                {% endfor %}
+
+                {% if allGames|length > 0 %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Journée</th>
+                                    <th>Équipe 1</th>
+                                    <th>Score</th>
+                                    <th>Équipe 2</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for game in allGames %}
+                                    <tr>
+                                        <td>Journée {{ game.day.number }}</td>
+                                        <td>
+                                            <strong>{{ game.team1.name }}</strong>
+                                            <small class="text-muted">({{ game.team1.country.name }})</small>
+                                        </td>
+                                        <td><strong>{{ game.team1Point }} - {{ game.team2Point }}</strong></td>
+                                        <td>
+                                            <strong>{{ game.team2.name }}</strong>
+                                            <small class="text-muted">({{ game.team2.country.name }})</small>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">Aucun match enregistré pour ce championnat.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

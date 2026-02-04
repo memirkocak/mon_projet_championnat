@@ -58,5 +58,19 @@ class ChampionshipController extends AbstractController
             'selectedCountry' => $selectedCountry,
         ]);
     }
+
+    #[Route('/championship/{id}', name: 'app_championship_show')]
+    public function show(ChampionshipRepository $championshipRepository, int $id): Response
+    {
+        $championship = $championshipRepository->find($id);
+
+        if (!$championship) {
+            throw $this->createNotFoundException('Championnat non trouvé');
+        }
+
+        return $this->render('championship/show.html.twig', [
+            'championship' => $championship,
+        ]);
+    }
 }
 
