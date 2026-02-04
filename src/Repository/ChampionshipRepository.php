@@ -19,19 +19,21 @@ class ChampionshipRepository extends ServiceEntityRepository
     
     public function findByCountry(?Country $country = null): array
     {
-        $qb = $this->createQueryBuilder('c')
+        // Si aucun pays n'est sélectionné retourner tous les championnats
+        if ($country === null) {
+            return $this->findBy([], ['startDate' => 'DESC', 'name' => 'ASC']);
+        }
+
+        return $this->createQueryBuilder('c')
             ->distinct()
             ->join('c.teamChampionShips', 'tcs')
             ->join('tcs.team', 't')
+            ->where('t.country = :country')
+            ->setParameter('country', $country)
             ->orderBy('c.startDate', 'DESC')
-            ->addOrderBy('c.name', 'ASC');
-
-        if ($country !== null) {
-            $qb->where('t.country = :country')
-               ->setParameter('country', $country);
-        }
-
-        return $qb->getQuery()->getResult();
+            ->addOrderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }
 
