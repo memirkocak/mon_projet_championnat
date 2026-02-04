@@ -68,8 +68,24 @@ class ChampionshipController extends AbstractController
             throw $this->createNotFoundException('Championnat non trouvé');
         }
 
+        $teams = [];
+        foreach ($championship->getDays() as $day) {
+            foreach ($day->getGames() as $game) {
+                $team1Id = $game->getTeam1()->getId();
+                $team2Id = $game->getTeam2()->getId();
+                
+                if (!isset($teams[$team1Id])) {
+                    $teams[$team1Id] = $game->getTeam1();
+                }
+                if (!isset($teams[$team2Id])) {
+                    $teams[$team2Id] = $game->getTeam2();
+                }
+            }
+        }
+
         return $this->render('championship/show.html.twig', [
             'championship' => $championship,
+            'teams' => array_values($teams),
         ]);
     }
 }
