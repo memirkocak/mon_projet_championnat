@@ -2,32 +2,133 @@
 
 {% block title %}Accueil{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .home-section {
+            margin-bottom: 3rem;
+        }
+        .section-title {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #0d6efd;
+        }
+        .action-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #dee2e6;
+            height: 100%;
+            text-decoration: none;
+            color: inherit;
+        }
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            text-decoration: none;
+            color: inherit;
+        }
+        .action-card .card-body {
+            padding: 1.5rem;
+        }
+        .action-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #0d6efd;
+        }
+        .action-card .card-text {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <div class="container mt-5">
-        <h1 class="mb-4">Hello World</h1>
-        
-        <div class="list-group">
-            <a href="{{ path('app_country_create') }}" class="list-group-item list-group-item-action">
-                <h2>Création de pays</h2>
-            </a>
-            <a href="{{ path('app_championship_create') }}" class="list-group-item list-group-item-action">
-                <h2>Création de championnat</h2>
-            </a>
-            <a href="{{ path('app_championships_list') }}" class="list-group-item list-group-item-action">
-                <h2>Liste des championnats</h2>
-            </a>
-            <a href="{{ path('app_team_championship_create') }}" class="list-group-item list-group-item-action">
-                <h2>Associer équipe à championnat</h2>
-            </a>
-            <a href="{{ path('app_team_create') }}" class="list-group-item list-group-item-action">
-                <h2>Création d'équipe</h2>
-            </a>
-            <a href="{{ path('app_day_create') }}" class="list-group-item list-group-item-action">
-                <h2>Création de journée</h2>
-            </a>
-            <a href="{{ path('app_game_create') }}" class="list-group-item list-group-item-action">
-                <h2>Création de résultat</h2>
-            </a>
+    <div class="container mt-4 mb-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="display-4 text-center mb-2">Gestion de Championnat</h1>
+                <p class="text-center text-muted">Bienvenue sur votre plateforme de gestion de championnats</p>
+            </div>
+        </div>
+
+        {# Section Consultation / Liste #}
+        <div class="home-section list-section">
+            <h2 class="section-title">Consultation</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <a href="{{ path('app_championships_list') }}" class="action-card card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Liste des championnats</h5>
+                            <p class="card-text">Consulter tous les championnats disponibles</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {# Section Création #}
+        <div class="home-section create-section">
+            <h2 class="section-title">Création</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <a href="{{ path('app_country_create') }}" class="action-card card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Créer un pays</h5>
+                            <p class="card-text">Ajouter un nouveau pays au système</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="{{ path('app_championship_create') }}" class="action-card card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Créer un championnat</h5>
+                            <p class="card-text">Créer un nouveau championnat</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="{{ path('app_team_create') }}" class="action-card card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Créer une équipe</h5>
+                            <p class="card-text">Ajouter une nouvelle équipe</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="{{ path('app_day_create') }}" class="action-card card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Créer une journée</h5>
+                            <p class="card-text">Ajouter une nouvelle journée de championnat</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="{{ path('app_game_create') }}" class="action-card card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Créer un résultat</h5>
+                            <p class="card-text">Enregistrer le résultat d'un match</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {# Section Association #}
+        <div class="home-section associate-section">
+            <h2 class="section-title">Associations</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <a href="{{ path('app_team_championship_create') }}" class="action-card card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Associer équipe à championnat</h5>
+                            <p class="card-text">Lier une équipe à un championnat</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
