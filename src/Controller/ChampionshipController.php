@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Championship;
+use App\Entity\Country;
 use App\Form\ChampionshipFormType;
+use App\Repository\ChampionshipRepository;
+use App\Repository\CountryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,6 +32,30 @@ class ChampionshipController extends AbstractController
 
         return $this->render('championship/create.html.twig', [
             'championshipForm' => $form,
+        ]);
+    }
+
+    #[Route('/championships', name: 'app_championships_list')]
+    public function list(
+        Request $request,
+        ChampionshipRepository $championshipRepository,
+        CountryRepository $countryRepository
+    ): Response {
+        $countryId = $request->query->get('country');
+        $selectedCountry = null;
+        $championships = [];
+
+        if ($countryId) {
+            $selectedCountry = $countryRepository->find($countryId);
+        }
+
+        $championships = $championshipRepository->findByCountry($selectedCountry);
+        $countries = $countryRepository->findBy([], ['name' => 'ASC']);
+
+        return $this->render('championship/list.html.twig', [
+            'championships' => $championships,
+            'countries' => $countries,
+            'selectedCountry' => $selectedCountry,
         ]);
     }
 }

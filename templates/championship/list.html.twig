@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des championnats{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>Liste des championnats</h1>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <form method="GET" action="{{ path('app_championships_list') }}" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label for="country" class="form-label">Filtrer par pays</label>
+                            <select name="country" id="country" class="form-control" onchange="this.form.submit()">
+                                <option value="">Tous les pays</option>
+                                {% for country in countries %}
+                                    <option value="{{ country.id }}" {% if selectedCountry and selectedCountry.id == country.id %}selected{% endif %}>
+                                        {{ country.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <a href="{{ path('app_home') }}" class="btn btn-secondary w-100">Retour à l'accueil</a>
+                        </div>
+                    </div>
+                </form>
+
+                {% if selectedCountry %}
+                    <h3>Championnats avec des équipes de {{ selectedCountry.name }}</h3>
+                {% else %}
+                    <h3>Tous les championnats</h3>
+                {% endif %}
+
+                {% if championships|length > 0 %}
+                    <div class="table-responsive mt-4">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Date de début</th>
+                                    <th>Date de fin</th>
+                                    <th>Points (Victoire/Nul/Défaite)</th>
+                                    <th>Type de classement</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for championship in championships %}
+                                    <tr>
+                                        <td><strong>{{ championship.name }}</strong></td>
+                                        <td>{{ championship.startDate|date('d/m/Y') }}</td>
+                                        <td>{{ championship.endDate|date('d/m/Y') }}</td>
+                                        <td>{{ championship.wonPoint }} / {{ championship.drawPoint }} / {{ championship.lostPoint }}</td>
+                                        <td>{{ championship.typeRanking }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info mt-4">
+                        {% if selectedCountry %}
+                            Aucun championnat trouvé pour ce pays.
+                        {% else %}
+                            Aucun championnat trouvé.
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
