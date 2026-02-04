@@ -5,7 +5,65 @@
 {% block body %}
     <div class="container mt-5">
         <h1>Création d'équipe</h1>
-        <a href="{{ path('app_home') }}" class="btn btn-secondary mt-3">Retour à l'accueil</a>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+
+        <div class="card mt-4">
+            <div class="card-body">
+                {{ form_start(teamForm, {'attr': {'enctype': 'multipart/form-data'}}) }}
+                    <div class="mb-3">
+                        {{ form_label(teamForm.name) }}
+                        {{ form_widget(teamForm.name) }}
+                        {{ form_errors(teamForm.name) }}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(teamForm.creationDate) }}
+                            {{ form_widget(teamForm.creationDate) }}
+                            {{ form_errors(teamForm.creationDate) }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(teamForm.country) }}
+                            {{ form_widget(teamForm.country) }}
+                            {{ form_errors(teamForm.country) }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(teamForm.stade) }}
+                        {{ form_widget(teamForm.stade) }}
+                        {{ form_errors(teamForm.stade) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(teamForm.logo) }}
+                        {{ form_widget(teamForm.logo) }}
+                        {{ form_errors(teamForm.logo) }}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(teamForm.president) }}
+                            {{ form_widget(teamForm.president) }}
+                            {{ form_errors(teamForm.president) }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(teamForm.coach) }}
+                            {{ form_widget(teamForm.coach) }}
+                            {{ form_errors(teamForm.coach) }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Créer l'équipe</button>
+                        <a href="{{ path('app_home') }}" class="btn btn-secondary">Retour à l'accueil</a>
+                    </div>
+                {{ form_end(teamForm) }}
+            </div>
+        </div>
     </div>
 {% endblock %}
 
