@@ -14,9 +14,16 @@
             <div class="alert alert-danger">{{ message }}</div>
         {% endfor %}
 
+        {% if gameForm.vars.errors|length > 0 %}
+            <div class="alert alert-danger">
+                <strong>Erreurs dans le formulaire :</strong>
+                {{ form_errors(gameForm) }}
+            </div>
+        {% endif %}
+
         <div class="card mt-4">
             <div class="card-body">
-                {{ form_start(gameForm) }}
+                {{ form_start(gameForm, {'method': 'POST'}) }}
                     <div class="mb-3">
                         {{ form_label(gameForm.day) }}
                         {{ form_widget(gameForm.day) }}

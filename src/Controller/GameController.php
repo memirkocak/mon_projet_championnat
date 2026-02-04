@@ -23,16 +23,18 @@ class GameController extends AbstractController
             // Vérifier que les deux équipes sont différentes
             if ($game->getTeam1() === $game->getTeam2()) {
                 $this->addFlash('error', 'Les deux équipes doivent être différentes.');
-                return $this->render('game/create.html.twig', [
-                    'gameForm' => $form,
-                ]);
+                return $this->redirectToRoute('app_game_create');
             }
 
-            $entityManager->persist($game);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Le résultat a été créé avec succès !');
-            return $this->redirectToRoute('app_home');
+            try {
+                $entityManager->persist($game);
+                $entityManager->flush();
+                $this->addFlash('success', 'Le résultat a été créé avec succès !');
+                return $this->redirectToRoute('app_home');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Erreur lors de la sauvegarde : ' . $e->getMessage());
+                return $this->redirectToRoute('app_game_create');
+            }
         }
 
         return $this->render('game/create.html.twig', [
