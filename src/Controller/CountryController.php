@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Country;
 use App\Form\CountryFormType;
+use App\Repository\CountryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -56,6 +57,80 @@ class CountryController extends AbstractController
 
         return $this->render('country/create.html.twig', [
             'countryForm' => $form,
+        ]);
+    }
+
+    #[Route('/countries', name: 'app_countries_list')]
+    public function list(CountryRepository $countryRepository): Response
+    {
+        $countries = $countryRepository->findBy([], ['name' => 'ASC']);
+
+        return $this->render('country/list.html.twig', [
+            'countries' => $countries,
+        ]);
+    }
+
+    #[Route('/country/{id}/edit', name: 'app_country_edit')]
+    public function edit(
+        Request $request,
+        CountryRepository $countryRepository,
+        EntityManagerInterface $entityManager,
+        SluggerInterface $slugger,
+        int $id
+    ): Response {
+        $country = $countryRepository->find($id);
+
+        if (!$country) {
+            throw $this->createNotFoundException('Pays non trouvé');
+        }
+
+        $oldLogo = $country->getLogo();
+        $form = $this->createForm(CountryFormType::class, $country);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $logoFile = $form->get('logo')->getData();
+
+            if ($logoFile) {
+                // Supprimer l'ancien logo s'il existe
+                if ($oldLogo) {
+                    $oldLogoPath = $this->getParameter('logos_directory') . '/' . $oldLogo;
+                    if (file_exists($oldLogoPath)) {
+                        unlink($oldLogoPath);
+                    }
+                }
+
+                $originalFilename = pathinfo($logoFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $logoFile->guessExtension();
+
+                try {
+                    $logoFile->move(
+                        $this->getParameter('logos_directory'),
+                        $newFilename
+                    );
+                    $country->setLogo($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors de l\'upload du logo.');
+                    return $this->render('country/edit.html.twig', [
+                        'countryForm' => $form,
+                        'country' => $country,
+                    ]);
+                }
+            } else {
+                // Garder l'ancien logo si aucun nouveau fichier n'est fourni
+                $country->setLogo($oldLogo);
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le pays a été modifié avec succès !');
+            return $this->redirectToRoute('app_countries_list');
+        }
+
+        return $this->render('country/edit.html.twig', [
+            'countryForm' => $form,
+            'country' => $country,
         ]);
     }
 }

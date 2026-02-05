@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le pays{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Modifier le pays : {{ country.name }}</h2>
+                    </div>
+                    <div class="card-body">
+                        {% for message in app.flashes('success') %}
+                            <div class="alert alert-success">{{ message }}</div>
+                        {% endfor %}
+
+                        {% for message in app.flashes('error') %}
+                            <div class="alert alert-danger">{{ message }}</div>
+                        {% endfor %}
+
+                        {% if country.logo %}
+                            <div class="mb-3">
+                                <label class="form-label">Logo actuel :</label>
+                                <div>
+                                    <img src="{{ asset('uploads/logos/' ~ country.logo) }}" 
+                                         alt="{{ country.name }}" 
+                                         style="max-width: 100px; max-height: 100px;">
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {{ form_start(countryForm, {'attr': {'enctype': 'multipart/form-data'}}) }}
+                            {{ form_row(countryForm.name) }}
+                            {{ form_row(countryForm.logo) }}
+                            
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                                <a href="{{ path('app_countries_list') }}" class="btn btn-secondary">Annuler</a>
+                            </div>
+                        {{ form_end(countryForm) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

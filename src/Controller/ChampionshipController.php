@@ -141,5 +141,34 @@ class ChampionshipController extends AbstractController
             'gameStats' => $gameStats,
         ]);
     }
+
+    #[Route('/championship/{id}/edit', name: 'app_championship_edit')]
+    public function edit(
+        Request $request,
+        ChampionshipRepository $championshipRepository,
+        EntityManagerInterface $entityManager,
+        int $id
+    ): Response {
+        $championship = $championshipRepository->find($id);
+
+        if (!$championship) {
+            throw $this->createNotFoundException('Championnat non trouvé');
+        }
+
+        $form = $this->createForm(ChampionshipFormType::class, $championship);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le championnat a été modifié avec succès !');
+            return $this->redirectToRoute('app_championships_list');
+        }
+
+        return $this->render('championship/edit.html.twig', [
+            'championshipForm' => $form,
+            'championship' => $championship,
+        ]);
+    }
 }
 

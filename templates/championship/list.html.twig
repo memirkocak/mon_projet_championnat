@@ -43,6 +43,7 @@
                                     <th>Date de fin</th>
                                     <th>Points (Victoire/Nul/Défaite)</th>
                                     <th>Type de classement</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -53,6 +54,9 @@
                                         <td>{{ championship.endDate|date('d/m/Y') }}</td>
                                         <td>{{ championship.wonPoint }} / {{ championship.drawPoint }} / {{ championship.lostPoint }}</td>
                                         <td>{{ championship.typeRanking }}</td>
+                                        <td>
+                                            <a href="{{ path('app_championship_edit', {id: championship.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

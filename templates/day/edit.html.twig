@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la journée{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Modifier la journée : Journée {{ day.number }}</h2>
+                        <p class="mb-0 text-muted">Championnat : {{ day.championship.name }}</p>
+                    </div>
+                    <div class="card-body">
+                        {% for message in app.flashes('success') %}
+                            <div class="alert alert-success">{{ message }}</div>
+                        {% endfor %}
+
+                        {% for message in app.flashes('error') %}
+                            <div class="alert alert-danger">{{ message }}</div>
+                        {% endfor %}
+
+                        {{ form_start(dayForm) }}
+                            {{ form_row(dayForm.championship) }}
+                            {{ form_row(dayForm.number) }}
+                            
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                                <a href="{{ path('app_championship_show', {id: day.championship.id}) }}" class="btn btn-secondary">Annuler</a>
+                            </div>
+                        {{ form_end(dayForm) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

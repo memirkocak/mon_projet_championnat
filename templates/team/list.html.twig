@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des équipes{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Liste des équipes</h1>
+            <div>
+                <a href="{{ path('app_team_create') }}" class="btn btn-primary">Créer une équipe</a>
+                <a href="{{ path('app_home') }}" class="btn btn-secondary">Retour à l'accueil</a>
+            </div>
+        </div>
+
+        {% if teams|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Pays</th>
+                            <th>Logo</th>
+                            <th>Stade</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for team in teams %}
+                            <tr>
+                                <td>{{ team.id }}</td>
+                                <td><strong>{{ team.name }}</strong></td>
+                                <td>{{ team.country.name }}</td>
+                                <td>
+                                    {% if team.logo %}
+                                        <img src="{{ asset('uploads/logos/' ~ team.logo) }}" 
+                                             alt="{{ team.name }}" 
+                                             style="max-width: 50px; max-height: 50px;">
+                                    {% else %}
+                                        <span class="text-muted">Aucun logo</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ team.stade }}</td>
+                                <td>
+                                    <a href="{{ path('app_team_edit', {id: team.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <p class="mb-0">Aucune équipe n'a encore été créée.</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+

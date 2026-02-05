@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier l'équipe{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Modifier l'équipe : {{ team.name }}</h2>
+                    </div>
+                    <div class="card-body">
+                        {% for message in app.flashes('success') %}
+                            <div class="alert alert-success">{{ message }}</div>
+                        {% endfor %}
+
+                        {% for message in app.flashes('error') %}
+                            <div class="alert alert-danger">{{ message }}</div>
+                        {% endfor %}
+
+                        {% if team.logo %}
+                            <div class="mb-3">
+                                <label class="form-label">Logo actuel :</label>
+                                <div>
+                                    <img src="{{ asset('uploads/logos/' ~ team.logo) }}" 
+                                         alt="{{ team.name }}" 
+                                         style="max-width: 100px; max-height: 100px;">
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {{ form_start(teamForm, {'attr': {'enctype': 'multipart/form-data'}}) }}
+                            {{ form_row(teamForm.name) }}
+                            {{ form_row(teamForm.creationDate) }}
+                            {{ form_row(teamForm.stade) }}
+                            {{ form_row(teamForm.logo) }}
+                            {{ form_row(teamForm.president) }}
+                            {{ form_row(teamForm.coach) }}
+                            {{ form_row(teamForm.country) }}
+                            
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                                <a href="{{ path('app_teams_list') }}" class="btn btn-secondary">Annuler</a>
+                            </div>
+                        {{ form_end(teamForm) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

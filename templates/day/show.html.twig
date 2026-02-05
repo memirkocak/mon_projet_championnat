@@ -9,7 +9,10 @@
                 <h1>Journée {{ day.number }}</h1>
                 <p class="text-muted mb-0">{{ championship.name }}</p>
             </div>
-            <a href="{{ path('app_championship_show', {id: championship.id}) }}" class="btn btn-secondary">Retour au championnat</a>
+            <div>
+                <a href="{{ path('app_day_edit', {id: day.id}) }}" class="btn btn-warning">Modifier la journée</a>
+                <a href="{{ path('app_championship_show', {id: championship.id}) }}" class="btn btn-secondary">Retour au championnat</a>
+            </div>
         </div>
 
         {% if gameStats|length > 0 %}
@@ -75,6 +78,9 @@
                                             <div class="mt-1">
                                                 <strong>{{ game.team2.name }}:</strong> 
                                                 <span class="badge bg-primary">{{ stat.team2PointsEarned }} pts</span>
+                                            </div>
+                                            <div class="mt-2">
+                                                <a href="{{ path('app_game_edit', {id: game.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
                                             </div>
                                         </td>
                                     </tr>
