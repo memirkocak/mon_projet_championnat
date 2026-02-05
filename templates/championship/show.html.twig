@@ -2,6 +2,22 @@
 
 {% block title %}{{ championship.name }}{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .day-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .day-card {
+            color: inherit;
+        }
+        .day-card:hover .card-title {
+            color: #0d6efd;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -59,14 +75,16 @@
                     <div class="row">
                         {% for day in championship.days %}
                             <div class="col-md-3 mb-3">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Journée {{ day.number }}</h5>
-                                        <p class="card-text">
-                                            <small class="text-muted">{{ day.games|length }} match(s)</small>
-                                        </p>
+                                <a href="{{ path('app_day_show', {id: day.id}) }}" class="text-decoration-none">
+                                    <div class="card h-100 day-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Journée {{ day.number }}</h5>
+                                            <p class="card-text">
+                                                <small class="text-muted">{{ day.games|length }} match(s)</small>
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         {% endfor %}
                     </div>

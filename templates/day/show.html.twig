@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Journée {{ day.number }} - {{ championship.name }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1>Journée {{ day.number }}</h1>
+                <p class="text-muted mb-0">{{ championship.name }}</p>
+            </div>
+            <a href="{{ path('app_championship_show', {id: championship.id}) }}" class="btn btn-secondary">Retour au championnat</a>
+        </div>
+
+        {% if gameStats|length > 0 %}
+            <div class="card">
+                <div class="card-header">
+                    <h3>Matchs de la journée</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Équipe 1</th>
+                                    <th>Score</th>
+                                    <th>Équipe 2</th>
+                                    <th>Résultat</th>
+                                    <th>Points gagnés</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stat in gameStats %}
+                                    {% set game = stat.game %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ game.team1.name }}</strong>
+                                            <small class="text-muted d-block">({{ game.team1.country.name }})</small>
+                                        </td>
+                                        <td>
+                                            <strong class="fs-5">{{ game.team1Point }} - {{ game.team2Point }}</strong>
+                                        </td>
+                                        <td>
+                                            <strong>{{ game.team2.name }}</strong>
+                                            <small class="text-muted d-block">({{ game.team2.country.name }})</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if stat.team1Result == 'win' %}bg-success
+                                                {% elseif stat.team1Result == 'loss' %}bg-danger
+                                                {% else %}bg-secondary
+                                                {% endif %}">
+                                                {% if stat.team1Result == 'win' %}Victoire
+                                                {% elseif stat.team1Result == 'loss' %}Défaite
+                                                {% else %}Match nul
+                                                {% endif %}
+                                            </span>
+                                            <span class="mx-2">vs</span>
+                                            <span class="badge 
+                                                {% if stat.team2Result == 'win' %}bg-success
+                                                {% elseif stat.team2Result == 'loss' %}bg-danger
+                                                {% else %}bg-secondary
+                                                {% endif %}">
+                                                {% if stat.team2Result == 'win' %}Victoire
+                                                {% elseif stat.team2Result == 'loss' %}Défaite
+                                                {% else %}Match nul
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ game.team1.name }}:</strong> 
+                                                <span class="badge bg-primary">{{ stat.team1PointsEarned }} pts</span>
+                                            </div>
+                                            <div class="mt-1">
+                                                <strong>{{ game.team2.name }}:</strong> 
+                                                <span class="badge bg-primary">{{ stat.team2PointsEarned }} pts</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiques de la journée -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h3>Statistiques de la journée</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h4>{{ gameStats|length }}</h4>
+                                <p class="mb-0 text-muted">Match(s) joué(s)</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                {% set totalGoals = 0 %}
+                                {% for stat in gameStats %}
+                                    {% set totalGoals = totalGoals + stat.game.team1Point + stat.game.team2Point %}
+                                {% endfor %}
+                                <h4>{{ totalGoals }}</h4>
+                                <p class="mb-0 text-muted">But(s) marqué(s)</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-3 bg-light rounded">
+                                {% set draws = 0 %}
+                                {% for stat in gameStats %}
+                                    {% if stat.team1Result == 'draw' %}
+                                        {% set draws = draws + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                <h4>{{ draws }}</h4>
+                                <p class="mb-0 text-muted">Match(s) nul(s)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <h4>Aucun match enregistré</h4>
+                <p class="mb-0">Aucun match n'a encore été joué pour cette journée.</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
