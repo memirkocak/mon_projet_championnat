@@ -133,5 +133,38 @@ class CountryController extends AbstractController
             'country' => $country,
         ]);
     }
+
+    #[Route('/country/{id}/delete', name: 'app_country_delete', methods: ['POST'])]
+    public function delete(
+        CountryRepository $countryRepository,
+        EntityManagerInterface $entityManager,
+        int $id
+    ): Response {
+        $country = $countryRepository->find($id);
+
+        if (!$country) {
+            throw $this->createNotFoundException('Pays non trouvé');
+        }
+
+        // Vérifier s'il y a des équipes liées
+        if ($country->getTeams()->count() > 0) {
+            $this->addFlash('error', 'Impossible de supprimer ce pays car il est associé à ' . $country->getTeams()->count() . ' équipe(s). Veuillez d\'abord supprimer ou modifier les équipes associées.');
+            return $this->redirectToRoute('app_countries_list');
+        }
+
+        // Supprimer le logo s'il existe
+        if ($country->getLogo()) {
+            $logoPath = $this->getParameter('logos_directory') . '/' . $country->getLogo();
+            if (file_exists($logoPath)) {
+                unlink($logoPath);
+            }
+        }
+
+        $entityManager->remove($country);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le pays a été supprimé avec succès !');
+        return $this->redirectToRoute('app_countries_list');
+    }
 }
 

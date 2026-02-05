@@ -56,6 +56,9 @@
                                         <td>{{ championship.typeRanking }}</td>
                                         <td>
                                             <a href="{{ path('app_championship_edit', {id: championship.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                                            <form method="post" action="{{ path('app_championship_delete', {id: championship.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce championnat ? Toutes les journées et matchs associés seront également supprimés.');" style="display: inline;">
+                                                <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 {% endfor %}

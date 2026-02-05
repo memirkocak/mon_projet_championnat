@@ -170,5 +170,25 @@ class ChampionshipController extends AbstractController
             'championship' => $championship,
         ]);
     }
+
+    #[Route('/championship/{id}/delete', name: 'app_championship_delete', methods: ['POST'])]
+    public function delete(
+        ChampionshipRepository $championshipRepository,
+        EntityManagerInterface $entityManager,
+        int $id
+    ): Response {
+        $championship = $championshipRepository->find($id);
+
+        if (!$championship) {
+            throw $this->createNotFoundException('Championnat non trouvé');
+        }
+
+        // Les jours et matchs seront supprimés en cascade grâce à la configuration cascade: ['persist', 'remove']
+        $entityManager->remove($championship);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le championnat a été supprimé avec succès !');
+        return $this->redirectToRoute('app_championships_list');
+    }
 }
 

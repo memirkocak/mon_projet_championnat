@@ -133,5 +133,39 @@ class TeamController extends AbstractController
             'team' => $team,
         ]);
     }
+
+    #[Route('/team/{id}/delete', name: 'app_team_delete', methods: ['POST'])]
+    public function delete(
+        TeamRepository $teamRepository,
+        EntityManagerInterface $entityManager,
+        int $id
+    ): Response {
+        $team = $teamRepository->find($id);
+
+        if (!$team) {
+            throw $this->createNotFoundException('Équipe non trouvée');
+        }
+
+        // Vérifier s'il y a des matchs liés
+        $gamesCount = $team->getGamesAsTeam1()->count() + $team->getGamesAsTeam2()->count();
+        if ($gamesCount > 0) {
+            $this->addFlash('error', 'Impossible de supprimer cette équipe car elle est associée à ' . $gamesCount . ' match(s). Veuillez d\'abord supprimer les matchs associés.');
+            return $this->redirectToRoute('app_teams_list');
+        }
+
+        // Supprimer le logo s'il existe
+        if ($team->getLogo()) {
+            $logoPath = $this->getParameter('logos_directory') . '/' . $team->getLogo();
+            if (file_exists($logoPath)) {
+                unlink($logoPath);
+            }
+        }
+
+        $entityManager->remove($team);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'L\'équipe a été supprimée avec succès !');
+        return $this->redirectToRoute('app_teams_list');
+    }
 }
 

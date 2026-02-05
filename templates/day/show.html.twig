@@ -11,6 +11,9 @@
             </div>
             <div>
                 <a href="{{ path('app_day_edit', {id: day.id}) }}" class="btn btn-warning">Modifier la journée</a>
+                <form method="post" action="{{ path('app_day_delete', {id: day.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette journée ? Tous les matchs associés seront également supprimés.');" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Supprimer la journée</button>
+                </form>
                 <a href="{{ path('app_championship_show', {id: championship.id}) }}" class="btn btn-secondary">Retour au championnat</a>
             </div>
         </div>
@@ -81,6 +84,9 @@
                                             </div>
                                             <div class="mt-2">
                                                 <a href="{{ path('app_game_edit', {id: game.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                                                <form method="post" action="{{ path('app_game_delete', {id: game.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce match ?');" style="display: inline;">
+                                                    <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>

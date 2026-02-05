@@ -39,6 +39,9 @@
                                 </td>
                                 <td>
                                     <a href="{{ path('app_country_edit', {id: country.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                                    <form method="post" action="{{ path('app_country_delete', {id: country.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce pays ?');" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                                    </form>
                                 </td>
                             </tr>
                         {% endfor %}

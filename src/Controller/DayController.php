@@ -61,5 +61,27 @@ class DayController extends AbstractController
             'day' => $day,
         ]);
     }
+
+    #[Route('/day/{id}/delete', name: 'app_day_delete', methods: ['POST'])]
+    public function delete(
+        DayRepository $dayRepository,
+        EntityManagerInterface $entityManager,
+        int $id
+    ): Response {
+        $day = $dayRepository->find($id);
+
+        if (!$day) {
+            throw $this->createNotFoundException('Journée non trouvée');
+        }
+
+        $championshipId = $day->getChampionship()->getId();
+
+        // Les matchs seront supprimés en cascade grâce à la configuration cascade: ['persist', 'remove']
+        $entityManager->remove($day);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'La journée a été supprimée avec succès !');
+        return $this->redirectToRoute('app_championship_show', ['id' => $championshipId]);
+    }
 }
 

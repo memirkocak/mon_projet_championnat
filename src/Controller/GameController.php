@@ -91,5 +91,33 @@ class GameController extends AbstractController
             'game' => $game,
         ]);
     }
+
+    #[Route('/game/{id}/delete', name: 'app_game_delete', methods: ['POST'])]
+    public function delete(
+        Request $request,
+        GameRepository $gameRepository,
+        EntityManagerInterface $entityManager,
+        int $id
+    ): Response {
+        $game = $gameRepository->find($id);
+
+        if (!$game) {
+            throw $this->createNotFoundException('Match non trouvé');
+        }
+
+        $dayId = $game->getDay()->getId();
+
+        $entityManager->remove($game);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le match a été supprimé avec succès !');
+        
+        // Rediriger vers la page de la journée si on vient de là, sinon vers la liste
+        $referer = $request->headers->get('referer');
+        if ($referer && strpos($referer, '/day/') !== false) {
+            return $this->redirectToRoute('app_day_show', ['id' => $dayId]);
+        }
+        return $this->redirectToRoute('app_games_list');
+    }
 }
 

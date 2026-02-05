@@ -24,6 +24,9 @@
             <h1>{{ championship.name }}</h1>
             <div>
                 <a href="{{ path('app_championship_edit', {id: championship.id}) }}" class="btn btn-warning">Modifier le championnat</a>
+                <form method="post" action="{{ path('app_championship_delete', {id: championship.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce championnat ? Toutes les journées et matchs associés seront également supprimés.');" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Supprimer le championnat</button>
+                </form>
                 <a href="{{ path('app_championships_list') }}" class="btn btn-secondary">Retour à la liste</a>
             </div>
         </div>
@@ -119,6 +122,7 @@
                                     <th>Équipe 1</th>
                                     <th>Score</th>
                                     <th>Équipe 2</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -133,6 +137,12 @@
                                         <td>
                                             <strong>{{ game.team2.name }}</strong>
                                             <small class="text-muted">({{ game.team2.country.name }})</small>
+                                        </td>
+                                        <td>
+                                            <a href="{{ path('app_game_edit', {id: game.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                                            <form method="post" action="{{ path('app_game_delete', {id: game.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce match ?');" style="display: inline;">
+                                                <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 {% endfor %}
