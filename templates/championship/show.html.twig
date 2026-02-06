@@ -255,7 +255,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        function initCarousel() {
             const carousel = document.getElementById('daysCarousel');
             if (!carousel) return;
 
@@ -265,18 +265,21 @@
             
             if (!container || !prevBtn || !nextBtn) return;
 
+            // Supprimer les anciens event listeners s'ils existent
+            const newPrevBtn = prevBtn.cloneNode(true);
+            const newNextBtn = nextBtn.cloneNode(true);
+            prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+            nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+
             let currentIndex = 0;
             const items = container.querySelectorAll('.day-item');
             const totalItems = items.length;
             
             if (totalItems === 0) return;
-            
-            const visibleItems = 1;
 
             function updateCarousel() {
                 const maxIndex = totalItems - 1;
                 
-                // Limiter currentIndex
                 if (currentIndex > maxIndex) {
                     currentIndex = maxIndex;
                 }
@@ -285,23 +288,21 @@
                 }
 
                 const carouselWidth = carousel.offsetWidth;
-                const padding = 100; // 50px de chaque côté
+                const padding = 100;
                 const visibleWidth = carouselWidth - padding;
 
                 items.forEach(item => {
                     item.style.width = visibleWidth + 'px';
                 });
 
-                // Calculer la translation (une journée à la fois)
                 const translateX = -currentIndex * visibleWidth;
                 container.style.transform = `translateX(${translateX}px)`;
 
-                // Mettre à jour les boutons
-                prevBtn.disabled = currentIndex === 0;
-                nextBtn.disabled = currentIndex >= maxIndex || totalItems <= 1;
+                newPrevBtn.disabled = currentIndex === 0;
+                newNextBtn.disabled = currentIndex >= maxIndex || totalItems <= 1;
             }
 
-            prevBtn.addEventListener('click', function(e) {
+            newPrevBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 if (currentIndex > 0) {
@@ -310,7 +311,7 @@
                 }
             });
 
-            nextBtn.addEventListener('click', function(e) {
+            newNextBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 const maxIndex = totalItems - 1;
@@ -320,16 +321,33 @@
                 }
             });
 
-            setTimeout(function() {
-                updateCarousel();
-            }, 200);
+            // Initialisation avec plusieurs tentatives
+            function tryInit() {
+                if (carousel.offsetWidth > 0) {
+                    updateCarousel();
+                } else {
+                    setTimeout(tryInit, 50);
+                }
+            }
+            
+            tryInit();
             
             let resizeTimeout;
             window.addEventListener('resize', function() {
                 clearTimeout(resizeTimeout);
                 resizeTimeout = setTimeout(updateCarousel, 100);
             });
-        });
+        }
+
+        // chargement de la page
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCarousel);
+        } else {
+            initCarousel();
+        }
+
+        document.addEventListener('turbo:load', initCarousel);
+        document.addEventListener('turbo:render', initCarousel);
     </script>
 {% endblock %}
 
