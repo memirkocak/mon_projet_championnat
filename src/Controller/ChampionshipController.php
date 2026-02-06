@@ -69,23 +69,56 @@ class ChampionshipController extends AbstractController
         }
 
         $teams = [];
+        $teamPoints = [];
+        
         foreach ($championship->getDays() as $day) {
             foreach ($day->getGames() as $game) {
-                $team1Id = $game->getTeam1()->getId();
-                $team2Id = $game->getTeam2()->getId();
+                $team1 = $game->getTeam1();
+                $team2 = $game->getTeam2();
+                $team1Id = $team1->getId();
+                $team2Id = $team2->getId();
                 
                 if (!isset($teams[$team1Id])) {
-                    $teams[$team1Id] = $game->getTeam1();
+                    $teams[$team1Id] = $team1;
+                    $teamPoints[$team1Id] = 0;
                 }
                 if (!isset($teams[$team2Id])) {
-                    $teams[$team2Id] = $game->getTeam2();
+                    $teams[$team2Id] = $team2;
+                    $teamPoints[$team2Id] = 0;
+                }
+                
+                $team1Points = $game->getTeam1Point();
+                $team2Points = $game->getTeam2Point();
+                
+                if ($team1Points > $team2Points) {
+                    $teamPoints[$team1Id] += $championship->getWonPoint();
+                    $teamPoints[$team2Id] += $championship->getLostPoint();
+                } elseif ($team2Points > $team1Points) {
+                    $teamPoints[$team1Id] += $championship->getLostPoint();
+                    $teamPoints[$team2Id] += $championship->getWonPoint();
+                } else {
+                    $teamPoints[$team1Id] += $championship->getDrawPoint();
+                    $teamPoints[$team2Id] += $championship->getDrawPoint();
                 }
             }
         }
+        
+        $ranking = [];
+        foreach ($teams as $teamId => $team) {
+            $ranking[] = [
+                'team' => $team,
+                'points' => $teamPoints[$teamId] ?? 0
+            ];
+        }
+        
+        usort($ranking, function($a, $b) {
+            return $b['points'] <=> $a['points'];
+        });
 
         return $this->render('championship/show.html.twig', [
             'championship' => $championship,
             'teams' => array_values($teams),
+            'ranking' => $ranking,
         ]);
     }
 
