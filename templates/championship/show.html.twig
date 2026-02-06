@@ -5,13 +5,6 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .day-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        .day-card {
-            color: inherit;
-        }
         .day-card:hover .card-title {
             color: #0d6efd;
         }
@@ -36,8 +29,6 @@
             top: 50%;
             transform: translateY(-50%);
             z-index: 10;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid #0d6efd;
             color: #0d6efd;
             width: 40px;
             height: 40px;
@@ -46,27 +37,14 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-size: 1.2rem;
             font-weight: bold;
-        }
-        .carousel-btn:hover {
-            background: #0d6efd;
-            color: white;
         }
         .carousel-btn.prev {
             left: 10px;
         }
         .carousel-btn.next {
             right: 10px;
-        }
-        .carousel-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .carousel-btn:disabled:hover {
-            background: rgba(255, 255, 255, 0.9);
-            color: #0d6efd;
         }
     </style>
 {% endblock %}
