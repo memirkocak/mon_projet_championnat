@@ -15,6 +15,58 @@
         .day-card:hover .card-title {
             color: #0d6efd;
         }
+        .days-carousel {
+            position: relative;
+            overflow: hidden;
+            padding: 0 50px;
+        }
+        .days-carousel-container {
+            display: flex;
+            transition: transform 0.3s ease;
+            gap: 1rem;
+            will-change: transform;
+        }
+        .day-item {
+            flex: 0 0 calc(25% - 0.75rem);
+            min-width: 0;
+        }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #0d6efd;
+            color: #0d6efd;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .carousel-btn:hover {
+            background: #0d6efd;
+            color: white;
+        }
+        .carousel-btn.prev {
+            left: 10px;
+        }
+        .carousel-btn.next {
+            right: 10px;
+        }
+        .carousel-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .carousel-btn:disabled:hover {
+            background: rgba(255, 255, 255, 0.9);
+            color: #0d6efd;
+        }
     </style>
 {% endblock %}
 
@@ -32,8 +84,7 @@
         </div>
 
         <div class="row">
-            <!-- Informations générales -->
-            <div class="col-md-6">
+            <div class="col-6">
                 <div class="card mb-4">
                     <div class="card-header">
                         <h3>Informations générales</h3>
@@ -47,8 +98,7 @@
                 </div>
             </div>
 
-            <!-- Équipes participantes -->
-            <div class="col-md-6">
+            <div class="col-6">
                 <div class="card mb-4">
                     <div class="card-header">
                         <h3>Équipes participantes</h3>
@@ -78,29 +128,33 @@
             </div>
             <div class="card-body">
                 {% if championship.days|length > 0 %}
-                    <div class="row">
-                        {% for day in championship.days %}
-                            <div class="col-md-3 mb-3">
-                                {% if day.id %}
-                                <a href="{{ path('app_day_show', {id: day.id}) }}" class="text-decoration-none">
-                                {% else %}
-                                <div class="text-decoration-none">
-                                {% endif %}
-                                    <div class="card h-100 day-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
-                                        <div class="card-body">
-                                            <h5 class="card-title">Journée {{ day.number }}</h5>
-                                            <p class="card-text">
-                                                <small class="text-muted">{{ day.games|length }} match(s)</small>
-                                            </p>
+                    <div class="days-carousel" id="daysCarousel">
+                        <button class="carousel-btn prev" id="prevBtn" aria-label="Journée précédente">‹</button>
+                        <button class="carousel-btn next" id="nextBtn" aria-label="Journée suivante">›</button>
+                        <div class="days-carousel-container" id="daysContainer">
+                            {% for day in championship.days %}
+                                <div class="day-item">
+                                    {% if day.id %}
+                                    <a href="{{ path('app_day_show', {id: day.id}) }}" class="text-decoration-none">
+                                    {% else %}
+                                    <div class="text-decoration-none">
+                                    {% endif %}
+                                        <div class="card h-100 day-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Journée {{ day.number }}</h5>
+                                                <p class="card-text">
+                                                    <small class="text-muted">{{ day.games|length }} match(s)</small>
+                                                </p>
+                                            </div>
                                         </div>
+                                    {% if day.id %}
+                                    </a>
+                                    {% else %}
                                     </div>
-                                {% if day.id %}
-                                </a>
-                                {% else %}
+                                    {% endif %}
                                 </div>
-                                {% endif %}
-                            </div>
-                        {% endfor %}
+                            {% endfor %}
+                        </div>
                     </div>
                 {% else %}
                     <p class="text-muted">Aucune journée créée pour ce championnat.</p>
@@ -108,7 +162,6 @@
             </div>
         </div>
 
-        <!-- Matchs -->
         <div class="card">
             <div class="card-header">
                 <h3>Matchs</h3>
@@ -163,5 +216,77 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousel = document.getElementById('daysCarousel');
+            if (!carousel) return;
+
+            const container = document.getElementById('daysContainer');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (!container || !prevBtn || !nextBtn) return;
+
+            let currentIndex = 0;
+            const items = container.querySelectorAll('.day-item');
+            const totalItems = items.length;
+            
+            if (totalItems === 0) return;
+            
+            // Nombre fixe d'éléments visibles (4)
+            const visibleItems = 4;
+
+            function getItemWidth() {
+                if (items.length === 0) return 0;
+                const containerWidth = container.parentElement.offsetWidth;
+                const gap = 16; // 1rem = 16px
+                return (containerWidth - (gap * (visibleItems - 1))) / visibleItems;
+            }
+
+            function updateCarousel() {
+                const maxIndex = Math.max(0, totalItems - visibleItems);
+                
+                // Limiter currentIndex
+                if (currentIndex > maxIndex) {
+                    currentIndex = maxIndex;
+                }
+                if (currentIndex < 0) {
+                    currentIndex = 0;
+                }
+
+                // Calculer la translation
+                const itemWidth = getItemWidth();
+                const gap = 16;
+                const translateX = -currentIndex * (itemWidth + gap);
+                container.style.transform = `translateX(${translateX}px)`;
+
+                // Mettre à jour les boutons
+                prevBtn.disabled = currentIndex === 0;
+                nextBtn.disabled = currentIndex >= maxIndex || totalItems <= visibleItems;
+            }
+
+            prevBtn.addEventListener('click', function() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateCarousel();
+                }
+            });
+
+            nextBtn.addEventListener('click', function() {
+                const maxIndex = Math.max(0, totalItems - visibleItems);
+                if (currentIndex < maxIndex) {
+                    currentIndex++;
+                    updateCarousel();
+                }
+            });
+
+            // Initialisation après un court délai pour s'assurer que les dimensions sont calculées
+            setTimeout(updateCarousel, 100);
+        });
+    </script>
 {% endblock %}
 
