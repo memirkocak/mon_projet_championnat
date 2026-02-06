@@ -81,7 +81,11 @@
                     <div class="row">
                         {% for day in championship.days %}
                             <div class="col-md-3 mb-3">
+                                {% if day.id %}
                                 <a href="{{ path('app_day_show', {id: day.id}) }}" class="text-decoration-none">
+                                {% else %}
+                                <div class="text-decoration-none">
+                                {% endif %}
                                     <div class="card h-100 day-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
                                         <div class="card-body">
                                             <h5 class="card-title">Journée {{ day.number }}</h5>
@@ -90,7 +94,11 @@
                                             </p>
                                         </div>
                                     </div>
+                                {% if day.id %}
                                 </a>
+                                {% else %}
+                                </div>
+                                {% endif %}
                             </div>
                         {% endfor %}
                     </div>
