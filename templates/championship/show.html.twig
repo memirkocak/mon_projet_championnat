@@ -23,12 +23,13 @@
         .days-carousel-container {
             display: flex;
             transition: transform 0.3s ease;
-            gap: 1rem;
             will-change: transform;
         }
         .day-item {
-            flex: 0 0 calc(25% - 0.75rem);
+            flex: 0 0 100%;
             min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
         }
         .carousel-btn {
             position: absolute;
@@ -237,18 +238,10 @@
             
             if (totalItems === 0) return;
             
-            // Nombre fixe d'éléments visibles (4)
-            const visibleItems = 4;
-
-            function getItemWidth() {
-                if (items.length === 0) return 0;
-                const containerWidth = container.parentElement.offsetWidth;
-                const gap = 16; // 1rem = 16px
-                return (containerWidth - (gap * (visibleItems - 1))) / visibleItems;
-            }
+            const visibleItems = 1;
 
             function updateCarousel() {
-                const maxIndex = Math.max(0, totalItems - visibleItems);
+                const maxIndex = totalItems - 1;
                 
                 // Limiter currentIndex
                 if (currentIndex > maxIndex) {
@@ -258,34 +251,51 @@
                     currentIndex = 0;
                 }
 
-                // Calculer la translation
-                const itemWidth = getItemWidth();
-                const gap = 16;
-                const translateX = -currentIndex * (itemWidth + gap);
+                const carouselWidth = carousel.offsetWidth;
+                const padding = 100; // 50px de chaque côté
+                const visibleWidth = carouselWidth - padding;
+
+                items.forEach(item => {
+                    item.style.width = visibleWidth + 'px';
+                });
+
+                // Calculer la translation (une journée à la fois)
+                const translateX = -currentIndex * visibleWidth;
                 container.style.transform = `translateX(${translateX}px)`;
 
                 // Mettre à jour les boutons
                 prevBtn.disabled = currentIndex === 0;
-                nextBtn.disabled = currentIndex >= maxIndex || totalItems <= visibleItems;
+                nextBtn.disabled = currentIndex >= maxIndex || totalItems <= 1;
             }
 
-            prevBtn.addEventListener('click', function() {
+            prevBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
                 if (currentIndex > 0) {
                     currentIndex--;
                     updateCarousel();
                 }
             });
 
-            nextBtn.addEventListener('click', function() {
-                const maxIndex = Math.max(0, totalItems - visibleItems);
+            nextBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const maxIndex = totalItems - 1;
                 if (currentIndex < maxIndex) {
                     currentIndex++;
                     updateCarousel();
                 }
             });
 
-            // Initialisation après un court délai pour s'assurer que les dimensions sont calculées
-            setTimeout(updateCarousel, 100);
+            setTimeout(function() {
+                updateCarousel();
+            }, 200);
+            
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(updateCarousel, 100);
+            });
         });
     </script>
 {% endblock %}
